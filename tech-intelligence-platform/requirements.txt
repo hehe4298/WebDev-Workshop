@@ -1,0 +1,8 @@
+feedparser
+requests
+beautifulsoup4
+SQLAlchemy
+python-docx
+APScheduler
+pytest
+pytest-cov
