@@ -1,0 +1,3 @@
+from src.config.settings import RSS_FEEDS, CATEGORY_KEYWORDS, CATEGORIES
+
+__all__ = ['RSS_FEEDS', 'CATEGORY_KEYWORDS', 'CATEGORIES']
