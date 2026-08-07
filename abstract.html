@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Determination of BMS and Power Developed in a Heterogeneous Battery Pack: Active Balancing via Actor-Critic Reinforcement Learning</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        header {
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+        }
+        h2 {
+            color: #2980b9;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 20px;
+        }
+        p {
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .keywords {
+            font-style: italic;
+            font-weight: bold;
+            color: #555;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Extended Abstract</h1>
+            <h2>Determination of BMS and Power Developed in a Heterogeneous Battery Pack: Active Balancing via Actor-Critic Reinforcement Learning</h2>
+        </header>
+
+        <section id="introduction">
+            <h2>Introduction & Motivation</h2>
+            <p>
+                The transition toward sustainable energy and advanced electric mobility relies heavily on efficient energy storage systems (ESS). While homogeneous battery packs constructed from a single chemistry type are standard, they often enforce a strict compromise between power density and energy density. In recent years, <strong>heterogeneous battery packs</strong>—which combine distinct electrochemical cell types—have emerged as a compelling solution to achieve synergetic performance. By integrating Lithium Iron Phosphate (LFP) cells, known for their thermal stability, long cycle life, and high safety, alongside Nickel Manganese Cobalt (NMC) cells, which offer superior specific energy and higher nominal voltages, developers can construct a hybridized pack that maximizes both longevity and instantaneous power delivery.
+            </p>
+            <p>
+                However, this heterogeneous architecture introduces profound operational complexities. The stark differences in the open-circuit voltage (OCV) curves, internal resistances, capacities, and degradation rates between LFP and NMC cells require sophisticated management strategies to prevent overcharging, deep discharging, and premature cell aging. A conventional Battery Management System (BMS) equipped with passive balancing or simple threshold-based active balancing is inadequate for tracking and mitigating the dynamic imbalances intrinsic to heterogeneous chemistries. This extended research abstract proposes an advanced, intelligent Smart BMS framework designed to resolve these challenges. The framework meticulously addresses individual and pack-level State of Charge (SoC) estimation, precise power development tracking, and state-of-the-art active balancing executed through a Reinforcement Learning (RL) Actor-Critic methodology.
+            </p>
+        </section>
+
+        <section id="soc-estimation">
+            <h2>Individual Cell and Combined Pack SoC Estimation</h2>
+            <p>
+                Accurate SoC estimation is the foundational pillar of any reliable BMS. In a heterogeneous pack containing both LFP and NMC cells, unified mathematical modeling is highly inaccurate due to the divergent operational characteristics of the chemistries. Specifically, the OCV-SoC curve for LFP cells is notoriously flat across a broad operating region (typically between 20% and 80% SoC), making voltage-based estimation error-prone. Conversely, NMC cells exhibit a steeper, more discernible OCV-SoC relationship.
+            </p>
+            <p>
+                To address this, our proposed Smart BMS deploys an adaptive, dual-filter estimation architecture for <strong>individual cell SoC</strong>. For the NMC cells, an Extended Kalman Filter (EKF) paired with a second-order Equivalent Circuit Model (ECM) is utilized to track internal states accurately. For the LFP cells, a data-driven approach, such as a neural network integrated with a Sigma-Point Kalman Filter (SPKF), is employed to capture the non-linear dynamics associated with the flat voltage plateau.
+            </p>
+            <p>
+                Ascertaining the <strong>combined pack SoC</strong> represents an additional layer of complexity. Because the pack's usable energy is bottlenecked by the weakest or most divergent cell, a simple averaging of individual SoCs provides a dangerous overestimation of usable energy. Thus, the Smart BMS calculates the combined pack SoC using an adaptive weighting algorithm that factors in the instantaneous capacity limits of the lowest-SoC cell during discharge and the highest-SoC cell during charge. This dynamic calculation ensures that the overall SoC metric communicated to the vehicle or inverter accurately reflects the true, safe operating boundaries of the heterogeneous pack.
+            </p>
+        </section>
+
+        <section id="power-developed">
+            <h2>Power Developed and Smart BMS Architecture</h2>
+            <p>
+                The <strong>power developed</strong> within a heterogeneous pack is highly transient, contingent upon the instantaneous load demands and the proportional energy contribution of each cell type. Given that LFP and NMC chemistries possess different internal impedances—which further fluctuate with temperature and age—the instantaneous power capability (State of Power, or SoP) must be dynamically regulated.
+            </p>
+            <p>
+                Our <strong>Smart BMS architecture</strong> introduces a hierarchical, decentralized topology to manage this. The hardware layer incorporates advanced sensing modules capable of high-frequency current and voltage sampling, coupled with thermal sensors distributed strategically among the LFP and NMC modules. This sensory data is fed into a centralized micro-controller that computes the dynamic power limits based on the continuous calculation of internal resistance (DCIR) for each cell type. During high-power transients (e.g., rapid acceleration in an EV), the BMS dynamically routes the load to rely heavier on the NMC cells, whereas during steady-state cruising, the LFP cells share the baseline load to preserve the NMC cells' longevity. This real-time power routing directly dictates the power developed at the pack terminals, optimizing performance without violating safety thresholds.
+            </p>
+        </section>
+
+        <section id="active-balancing">
+            <h2>Active Balancing Techniques: Hardware and RL Control</h2>
+            <p>
+                Because heterogeneous cells possess inherently different nominal voltages and capacities, extreme cell imbalance is a continuous operational state rather than an occasional anomaly. Passive balancing, which dissipates excess energy as heat, is highly inefficient and thermally dangerous in this context. Therefore, <strong>active balancing</strong> is mandatory.
+            </p>
+            <p>
+                From a hardware perspective, the Smart BMS leverages isolated bi-directional power electronics. Specifically, <strong>Buck-Boost</strong> converters and <strong>Flyback</strong> transformers are implemented to facilitate non-dissipative energy transfer. Buck-boost architectures allow for adjacent cell-to-cell charge transfer, which is highly efficient for localized imbalances, while isolated Flyback topologies enable pack-to-cell or cell-to-pack energy routing, providing the necessary flexibility to transfer energy from the higher-voltage NMC strings to lower-voltage LFP strings, or vice versa, depending on the operational phase.
+            </p>
+            <p>
+                The true innovation of this framework lies in the control algorithm orchestrating these power electronics. Traditional active balancing relies on fixed voltage-threshold rules, which fail to anticipate future load profiles or optimize for long-term battery health. To overcome this, we employ a <strong>Reinforcement Learning (RL) Actor-Critic method</strong>. In this paradigm, the "Actor" network continuously maps the high-dimensional state space (consisting of all individual cell SoCs, temperatures, and instantaneous currents) to a continuous action space (the duty cycles of the Buck-Boost/Flyback MOSFETs). Simultaneously, the "Critic" network evaluates the action taken by calculating a value function—a reward signal designed to penalize temperature gradients, minimize energy transfer losses, and maximize charge homogeneity across the pack. Through continuous interaction with the battery environment, the Actor-Critic agent learns the optimal policy for active balancing, vastly outperforming rule-based controllers in dynamic efficiency.
+            </p>
+        </section>
+
+        <section id="algorithm-comparison">
+            <h2>Algorithm Comparison: DDPG vs. TD3 and SAC</h2>
+            <p>
+                Selecting the appropriate RL algorithm is critical for ensuring the stability and convergence of the Smart BMS controller. The Actor-Critic family contains several advanced algorithms suitable for continuous action spaces, most notably Deep Deterministic Policy Gradient (DDPG), Twin Delayed Deep Deterministic Policy Gradient (TD3), and Soft Actor-Critic (SAC).
+            </p>
+            <p>
+                <strong>DDPG (Deep Deterministic Policy Gradient):</strong> DDPG is a fundamental off-policy Actor-Critic algorithm that operates efficiently in continuous action spaces. In our preliminary simulations, DDPG successfully learned basic balancing policies. However, it demonstrated a known vulnerability: overestimation bias in the Critic network, leading to suboptimal, brittle policies that occasionally commanded overly aggressive balancing currents, causing minor thermal spikes in the simulated power electronics.
+            </p>
+            <p>
+                <strong>TD3 (Twin Delayed DDPG):</strong> To mitigate the overestimation bias of DDPG, TD3 introduces three critical modifications: clipped double Q-learning (using two Critic networks and taking the minimum value), delayed policy updates, and target policy smoothing. When applied to the heterogeneous balancing problem, TD3 showed significantly improved stability. The balancing currents commanded by the TD3 Actor were much smoother, reducing switching losses in the Flyback transformers and lowering the overall thermal footprint of the balancing circuit.
+            </p>
+            <p>
+                <strong>SAC (Soft Actor-Critic):</strong> SAC expands upon the Actor-Critic framework by incorporating entropy maximization. The agent is rewarded not only for maximizing the expected return (effective balancing) but also for maximizing the entropy (randomness) of its policy. This encourages deeper exploration of the state space. In the context of a highly dynamic heterogeneous pack under unpredictable EV drive cycles, SAC proved to be the most robust. Its stochastic policy allowed the BMS to discover novel, non-intuitive balancing sequences that optimized energy transfer better than both DDPG and TD3 during edge-case scenarios (such as extreme cold-weather driving mixed with rapid charging pulses). Ultimately, while TD3 offers excellent deterministic stability, SAC provides the superior adaptability required for real-world heterogeneous Smart BMS applications.
+            </p>
+        </section>
+
+        <section id="conclusion">
+            <h2>Conclusion</h2>
+            <p>
+                The integration of LFP and NMC chemistries into a unified heterogeneous battery pack offers a promising horizon for advanced energy storage, marrying high power density with extended cycle life and safety. Unlocking this potential requires moving beyond traditional BMS architectures. By implementing precise, dual-chemistry SoC estimation algorithms, dynamic power routing, and robust active balancing hardware (Buck-Boost/Flyback converters) controlled by advanced Reinforcement Learning Actor-Critic algorithms (specifically SAC or TD3), this research demonstrates a comprehensive pathway to maximizing the efficiency and safety of heterogeneous packs. This Smart BMS framework ensures that energy is transferred intelligently rather than dissipated, paving the way for next-generation, highly optimized electric vehicles and grid storage solutions.
+            </p>
+        </section>
+
+        <p class="keywords">Keywords: Heterogeneous Battery Pack, LFP, NMC, Smart BMS, State of Charge (SoC), Active Balancing, Buck-Boost, Flyback, Actor-Critic, Reinforcement Learning, DDPG, TD3, SAC.</p>
+    </div>
+</body>
+</html>
